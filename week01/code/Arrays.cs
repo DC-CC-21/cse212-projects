@@ -15,16 +15,17 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        // Initialize arr as an array of doubles with a length of length
+        // Initialize arr as an array of doubles with a length of 'length'
         double[] arr = new double[length];
 
         // For loop from one to length
         for (int i = 0; i < length; i++)
         {
-            // Multiply the current loop index plus one by number and add the value to arr
+            // Multiply (current loop index plus one) by number and add the value to arr
             arr[i] = number * (i + 1);
         }
 
+        // return arr
         return arr;
     }
 
@@ -42,13 +43,13 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        // Create a slice data with a range of (data.Count-amount) to the end
+        // Create a slice of the data list with a range of (data.Count-amount) to the end
         List<int> slice = data.Slice(data.Count - amount, amount);
 
-        // Remove the sliced values from data using the same range as the slice
+        // Remove the sliced values from data using the same range as the one used to slice
         data.RemoveRange(data.Count - amount, amount);
 
-        // Insert the sliced data at the beginning of the original data
+        // Insert the sliced data at the beginning of the original data list
         data.InsertRange(0, slice);
     }
 }
