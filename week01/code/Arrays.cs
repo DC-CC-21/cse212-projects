@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 public static class Arrays
 {
     /// <summary>
@@ -13,7 +15,17 @@ public static class Arrays
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
-        return []; // replace this return statement with your own
+        // Initialize arr as an array of doubles with a length of length
+        double[] arr = new double[length];
+
+        // For loop from one to length
+        for (int i = 0; i < length; i++)
+        {
+            // Multiply the current loop index plus one by number and add the value to arr
+            arr[i] = number * (i + 1);
+        }
+
+        return arr;
     }
 
     /// <summary>
@@ -29,5 +41,14 @@ public static class Arrays
         // Remember: Using comments in your program, write down your process for solving this problem
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
+
+        // Create a slice data with a range of (data.Count-amount) to the end
+        List<int> slice = data.Slice(data.Count - amount, amount);
+
+        // Remove the sliced values from data using the same range as the slice
+        data.RemoveRange(data.Count - amount, amount);
+
+        // Insert the sliced data at the beginning of the original data
+        data.InsertRange(0, slice);
     }
 }
