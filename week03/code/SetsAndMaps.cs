@@ -1,3 +1,4 @@
+using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 
 public static class SetsAndMaps
@@ -22,7 +23,35 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        // Initialize a HashSet of each of the words
+        HashSet<string> wordSets = [.. words];
+
+        // Initialize an empty list that will store the results
+        List<string> result = [];
+
+        // Loop through each word in the words array
+        foreach (string word in words)
+        {
+            // Reverse the current word since we are looking for symmetric pairs
+            string reversed = new string([.. word.Reverse()]);
+
+            // Check if the reversed word is in the wordSet and the current word is not equal to the reversed word
+            if (wordSets.Contains(reversed) && word != reversed)
+            {
+                // Format the symmetric pair
+                string formatted = $"{reversed} & {word}";
+
+                // Remove both the words and its reversed form from the wordSet
+                wordSets.Remove(reversed);
+                wordSets.Remove(word);
+
+                // Add the formatted pair to the result
+                result.Add(formatted);
+            }
+        }
+
+        // Return the result as an array
+        return [.. result];
     }
 
     /// <summary>
@@ -43,6 +72,11 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            string degree = fields[3];
+            if (!degrees.TryAdd(degree, 1))
+            {
+                degrees[degree] += 1;
+            }
         }
 
         return degrees;
@@ -66,8 +100,55 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // Initialize a dictionary for each word
+        Dictionary<char, int> word1Dict = [];
+        Dictionary<char, int> word2Dict = [];
+
+        // Remove spaces from each word
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
+
+        // if words are not the same length return false because they cannot be anagrams
+        if (word1.Length != word2.Length)
+        {
+            return false;
+        }
+
+        // loop through each character in each word
+        for (int i = 0; i < word1.Length; i++)
+        {
+
+            // retrieve the character at the current index for each word and store them in separate variables
+            char w1 = word1[i];
+            char w2 = word2[i];
+
+            // try adding w1 to the word1 dictionary with a value of 1
+            if (!word1Dict.TryAdd(w1, 1))
+            {
+                // If it fails to add the key, then increment the value
+                word1Dict[w1] += 1;
+            }
+
+            // try adding w2 to the word2 dictionary with a value of 1
+            if (!word2Dict.TryAdd(w2, 1))
+            {
+                // If it fails to add the key, then increment the value
+                word2Dict[w2] += 1;
+            }
+        }
+
+        // If the dictionaries are the same length then they could be anagrams
+        foreach (char key in word1Dict.Keys)
+        {
+            // If the word2 dictionary does not contain the key or the values are not the same then return false
+            if (!word2Dict.TryGetValue(key, out int value) || word1Dict[key] != value)
+            {
+                return false;
+            }
+        }
+
+        // All anagram testing logic must have passed so return true
+        return true;
     }
 
     /// <summary>
@@ -100,7 +181,31 @@ public static class SetsAndMaps
         // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
+        // Function to convert Unix timestamp to DateTime
+        DateTime UnixTimeStampToDateTime(double unixTimeStamp)
+        {
+            // Unix timestamp is in milliseconds
+            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            return epoch.AddMilliseconds(unixTimeStamp).ToLocalTime();
+        }
+
+        // Filter the earthquakes to only include those that happened today
+        Features[] earthquakesToday = [.. featureCollection.features.Where(x => UnixTimeStampToDateTime(x.properties.time).Date == DateTime.Now.Date)];
+
+        // Create a summary of the earthquakes
+        string[] summary = earthquakesToday.Select(x =>
+        {
+            string place = x.properties.place
+                // clear space from between distance and km
+                .Replace(" km", "km")
+                // Replace the comma with a semicolon
+                .Replace(",", ";");
+
+            double mag = x.properties.mag ?? 0;
+            return $"{place} - Mag {mag}";
+        }).ToArray();
+
         // 3. Return an array of these string descriptions.
-        return [];
+        return summary;
     }
 }
